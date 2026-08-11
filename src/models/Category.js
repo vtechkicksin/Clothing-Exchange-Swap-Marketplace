@@ -5,9 +5,9 @@ const Category = sequelize.define(
   "Category",
   {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.STRING(20),
       primaryKey: true,
+      allowNull: false,
     },
 
     name: {
