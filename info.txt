@@ -1,0 +1,8 @@
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=clothing_exchange_db
+DB_USER=clothing_app
+DB_PASSWORD=ClothingApp@123
+
+
+CREATE USER 'clothing_app'@'localhost' IDENTIFIED BY 'ClothingApp@123';
