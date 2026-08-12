@@ -1,5 +1,8 @@
 const app = require("./app");
-const { connectDB } = require("./config/database");
+const sequelize = require("./config/database");
+const { connectDB } = sequelize;
+
+require("./models/User");
 
 const PORT = process.env.PORT || 3000;
 
