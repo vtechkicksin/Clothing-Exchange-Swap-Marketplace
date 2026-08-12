@@ -1,8 +1,8 @@
 import { useState } from "react";
-import AuthBrandPanel from "./AuthBrandPanel";
-import AuthForm from "./AuthForm";
-import { loginUser, registerUser } from "../../services/authService";
-import "./AuthPage.css";
+import AuthBrandPanel from "./components/AuthBrandPanel";
+import AuthForm from "./components/AuthForm";
+import { loginUser, registerUser } from "./services/authService";
+import "./styles/AuthPage.css";
 
 const initialLoginState = {
   email: "",
