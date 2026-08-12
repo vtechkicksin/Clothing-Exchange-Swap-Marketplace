@@ -16,7 +16,7 @@ const initialRegisterState = {
   phone: "",
 };
 
-const AuthPage = () => {
+const AuthPage = ({ onLoginSuccess }) => {
   const [mode, setMode] = useState("login");
   const [loginData, setLoginData] = useState(initialLoginState);
   const [registerData, setRegisterData] = useState(initialRegisterState);
@@ -44,7 +44,10 @@ const AuthPage = () => {
         type: "success",
         text: "Login successful! Redirecting to your dashboard...",
       });
-      console.log("Login response:", result);
+
+      if (onLoginSuccess) {
+        onLoginSuccess(result);
+      }
     } catch (error) {
       setMessage({
         type: "error",
