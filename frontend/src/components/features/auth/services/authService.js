@@ -1,21 +1,10 @@
-import { API_BASE_URL } from "../../../../config/api";
+import { apiRequest } from "../../../../config/api";
 
 const request = async (endpoint, payload) => {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+  return apiRequest(endpoint, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify(payload),
   });
-
-  const data = await response.json().catch(() => ({}));
-
-  if (!response.ok) {
-    throw new Error(data.message || "Request failed");
-  }
-
-  return data;
 };
 
 export const loginUser = async (payload) => {

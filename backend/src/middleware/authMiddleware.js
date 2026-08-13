@@ -3,12 +3,15 @@ const User = require("../models/User");
 
 const authenticateJWT = async (req, res, next) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
+  const tokenFromCookie = req.cookies?.swapstyle_token;
+  const token = authHeader?.startsWith("Bearer ")
+    ? authHeader.split(" ")[1]
+    : tokenFromCookie;
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  if (!token) {
     return res.status(401).json({ message: "Authorization token missing" });
   }
 
-  const token = authHeader.split(" ")[1];
   const secret = process.env.JWT_SECRET;
 
   if (!secret) {

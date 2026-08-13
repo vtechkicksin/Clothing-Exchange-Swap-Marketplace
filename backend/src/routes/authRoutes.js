@@ -2,10 +2,49 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const { authenticateJWT } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
 class AuthController {
+  static setAuthCookie(res, token) {
+    res.cookie("swapstyle_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 1000,
+      path: "/",
+    });
+  }
+
+  static async getCurrentUser(req, res) {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      return res.json({
+        user: {
+          id: req.user.id,
+          name: req.user.name,
+          email: req.user.email,
+          role: req.user.role,
+        },
+      });
+    } catch (error) {
+      return res.status(500).json({ message: "Could not load session" });
+    }
+  }
+
+  static async logout(req, res) {
+    try {
+      res.clearCookie("swapstyle_token", { path: "/" });
+      return res.json({ message: "Logged out successfully" });
+    } catch (error) {
+      return res.status(500).json({ message: "Logout failed" });
+    }
+  }
+
   static generateToken(user) {
     return jwt.sign(
       { id: user.id, role: user.role, email: user.email },
@@ -40,10 +79,10 @@ class AuthController {
       });
 
       const token = AuthController.generateToken(user);
+      AuthController.setAuthCookie(res, token);
 
       return res.status(201).json({
         message: "User registered successfully",
-        token,
         user: {
           id: user.id,
           name: user.name,
@@ -82,9 +121,9 @@ class AuthController {
       }
 
       const token = AuthController.generateToken(user);
+      AuthController.setAuthCookie(res, token);
 
       return res.json({
-        token,
         user: {
           id: user.id,
           name: user.name,
@@ -99,6 +138,8 @@ class AuthController {
   }
 }
 
+router.get("/me", authenticateJWT, AuthController.getCurrentUser);
+router.post("/logout", AuthController.logout);
 router.post("/register", AuthController.register);
 router.post("/login", AuthController.login);
 

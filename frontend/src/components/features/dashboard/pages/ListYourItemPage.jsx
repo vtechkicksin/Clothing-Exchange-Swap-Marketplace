@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { createListing } from "../services/listingService";
 import "./ListYourItemPage.css";
 
 const maxPhotos = 6;
@@ -102,32 +103,29 @@ const ListYourItemPage = ({ onLogout }) => {
     );
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-
-    const payload = {
-      ...formData,
-      estimatedValue: Number(formData.estimatedValue) || 0,
-      availableForSwap: Boolean(formData.availableForSwap),
-      selectedImages,
-    };
 
     const formDataToSend = new FormData();
 
-    Object.entries(payload).forEach(([key, value]) => {
-      if (key === "selectedImages") {
-        selectedImages.forEach((file) => {
-          formDataToSend.append("images", file);
-        });
-        return;
-      }
-
+    Object.entries(formData).forEach(([key, value]) => {
       formDataToSend.append(key, value);
     });
 
-    console.log("Listing payload for multer backend: >>>>>>>>>", payload);
-    // console.log("Files selected for upload: >>>>>>>>>", selectedImages);
-    // console.log("FormData ready for API:", formDataToSend);
+    selectedImages.forEach((file) => {
+      formDataToSend.append("images", file);
+    });
+
+    try {
+      const result = await createListing(formDataToSend);
+      console.log("Listing created successfully:", result);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Create listing error:", error);
+      alert(
+        error.message || "Something went wrong while creating the listing.",
+      );
+    }
   };
 
   return (

@@ -1,43 +1,56 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { API_BASE_URL } from "./config/api";
 import AuthPage from "./components/features/auth/AuthPage";
 import DashboardPage from "./components/features/dashboard/DashboardPage";
 import ListYourItemPage from "./components/features/dashboard/pages/ListYourItemPage";
 import "./App.css";
 
-const getStoredAuth = () => {
-  if (typeof window === "undefined") {
-    return false;
-  }
+const fetchCurrentSession = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/me`, {
+      method: "GET",
+      credentials: "include",
+    });
 
-  return Boolean(window.localStorage.getItem("swapstyle_token"));
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    return data.user || null;
+  } catch (error) {
+    return null;
+  }
 };
 
 function AppRoutes() {
-  const [isAuthenticated, setIsAuthenticated] = useState(getStoredAuth);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const handleStorageChange = () => {
-      setIsAuthenticated(getStoredAuth());
+    const restoreSession = async () => {
+      const user = await fetchCurrentSession();
+      setIsAuthenticated(Boolean(user));
     };
 
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
+    restoreSession();
   }, []);
 
-  const handleLoginSuccess = (result) => {
-    const token = result?.token || result?.data?.token;
-
-    if (token) {
-      window.localStorage.setItem("swapstyle_token", token);
-    }
-
+  const handleLoginSuccess = () => {
     setIsAuthenticated(true);
   };
 
-  const handleLogout = () => {
-    window.localStorage.removeItem("swapstyle_token");
-    setIsAuthenticated(false);
+  const handleLogout = async () => {
+    try {
+      await fetch(`${API_BASE_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      setIsAuthenticated(false);
+    }
   };
 
   return (
