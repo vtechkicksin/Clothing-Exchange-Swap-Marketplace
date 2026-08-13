@@ -26,18 +26,28 @@ const fetchCurrentSession = async () => {
 
 function AppRoutes() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const restoreSession = async () => {
-      const user = await fetchCurrentSession();
-      setIsAuthenticated(Boolean(user));
+      const userData = await fetchCurrentSession();
+      if (userData) {
+        setUser(userData);
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+      }
     };
 
     restoreSession();
   }, []);
 
-  const handleLoginSuccess = () => {
-    setIsAuthenticated(true);
+  const handleLoginSuccess = async () => {
+    const userData = await fetchCurrentSession();
+    if (userData) {
+      setUser(userData);
+      setIsAuthenticated(true);
+    }
   };
 
   const handleLogout = async () => {
@@ -49,6 +59,7 @@ function AppRoutes() {
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
+      setUser(null);
       setIsAuthenticated(false);
     }
   };
@@ -70,7 +81,7 @@ function AppRoutes() {
         path="/dashboard"
         element={
           isAuthenticated ? (
-            <DashboardPage onLogout={handleLogout} />
+            <DashboardPage onLogout={handleLogout} user={user} />
           ) : (
             <Navigate to="/" replace />
           )
@@ -81,7 +92,7 @@ function AppRoutes() {
         path="/list-item"
         element={
           isAuthenticated ? (
-            <ListYourItemPage onLogout={handleLogout} />
+            <ListYourItemPage onLogout={handleLogout} user={user} />
           ) : (
             <Navigate to="/" replace />
           )

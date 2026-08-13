@@ -8,8 +8,20 @@ const navItems = [
   "Calendar",
 ];
 
-const DashboardHeader = ({ onLogout }) => {
+const getInitials = (name) => {
+  if (!name) return "U";
+  return name
+    .split(" ")
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+};
+
+const DashboardHeader = ({ onLogout, user }) => {
   const navigate = useNavigate();
+  const userName = user?.fullName || user?.name || "User";
+  const initials = getInitials(userName);
 
   const handleLogout = () => {
     if (onLogout) {
@@ -55,8 +67,8 @@ const DashboardHeader = ({ onLogout }) => {
           🔔
         </button>
         <div className="user-chip">
-          <div className="avatar">N</div>
-          <span>Neha Sharma</span>
+          <div className="avatar">{initials}</div>
+          <span>{userName}</span>
         </div>
         <button
           type="button"

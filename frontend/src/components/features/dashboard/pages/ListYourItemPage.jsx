@@ -31,8 +31,20 @@ const initialFormState = {
   availableForSwap: true,
 };
 
-const ListYourItemPage = ({ onLogout }) => {
+const getInitials = (name) => {
+  if (!name) return "U";
+  return name
+    .split(" ")
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+};
+
+const ListYourItemPage = ({ onLogout, user }) => {
   const navigate = useNavigate();
+  const userName = user?.fullName || user?.name || "User";
+  const initials = getInitials(userName);
   const [formData, setFormData] = useState(initialFormState);
   const [selectedImages, setSelectedImages] = useState([]);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -175,8 +187,8 @@ const ListYourItemPage = ({ onLogout }) => {
               🔔
             </button>
             <div className="user-chip">
-              <div className="avatar">N</div>
-              <span>Neha Sharma</span>
+              <div className="avatar">{initials}</div>
+              <span>{userName}</span>
             </div>
             <button
               type="button"

@@ -6,10 +6,10 @@ import ListingCard from "./components/ListingCard";
 import RecommendedList from "./components/RecommendedList";
 import "./styles/DashboardPage.css";
 
-const DashboardPage = ({ onLogout }) => {
+const DashboardPage = ({ onLogout, user }) => {
   return (
     <div className="dashboard-page">
-      <DashboardHeader onLogout={onLogout} />
+      <DashboardHeader onLogout={onLogout} user={user} />
 
       <main className="dashboard-main">
         <section className="left-column">
