@@ -3,6 +3,7 @@ const sequelize = require("./config/database");
 const { connectDB } = sequelize;
 
 require("./models/User");
+require("./config/associations");
 
 const PORT = process.env.PORT || 3000;
 
