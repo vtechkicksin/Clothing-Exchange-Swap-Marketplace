@@ -1,71 +1,139 @@
-const items = [
-  {
-    name: "Denim Jacket",
-    size: "Size: M",
-    status: "Good",
-    likes: 12,
-    comments: 2,
-    color: "#dfe7f0",
-  },
-  {
-    name: "Floral Dress",
-    size: "Size: S",
-    status: "Like New",
-    likes: 8,
-    comments: 1,
-    color: "#e9f2db",
-  },
-  {
-    name: "White Sneakers",
-    size: "Size: 8",
-    status: "Good",
-    likes: 15,
-    comments: 3,
-    color: "#f8f8f8",
-  },
-  {
-    name: "Handbag",
-    size: "Like New",
-    status: "Good",
-    likes: 6,
-    comments: 1,
-    color: "#efe3d7",
-  },
-];
+import { useState } from "react";
+import { useClothingListings } from "../hooks/useClothingListings";
+import {
+  getPrimaryImage,
+  getImageUrl,
+  formatCondition,
+} from "../services/clothingListingsService";
+import "./ListingCard.css";
 
 const ListingCard = () => {
+  const { listings, isLoading, error } = useClothingListings();
+  const [favorites, setFavorites] = useState(new Set());
+
+  const toggleFavorite = (itemId) => {
+    setFavorites((prev) => {
+      const newFavorites = new Set(prev);
+      if (newFavorites.has(itemId)) {
+        newFavorites.delete(itemId);
+      } else {
+        newFavorites.add(itemId);
+      }
+      return newFavorites;
+    });
+  };
+
+  const handleViewAll = () => {
+    // TODO: Navigate to full listings page or open modal
+    console.log("View all listings");
+  };
+
   return (
     <div className="listing-section panel-box">
       <div className="panel-header">
         <h3>Recent Listings</h3>
-        <button type="button" className="text-link">
+        <button type="button" className="text-link" onClick={handleViewAll}>
           View All
         </button>
       </div>
 
-      <div className="listing-grid">
-        {items.map((item) => (
-          <article key={item.name} className="listing-item">
-            <div
-              className="item-visual"
-              style={{ backgroundColor: item.color }}
-            >
-              <button type="button" className="favorite-button">
-                ♡
-              </button>
-            </div>
-            <div className="item-meta">
-              <h4>{item.name}</h4>
-              <div className="item-submeta">{item.size}</div>
-              <div className="item-status">{item.status}</div>
-            </div>
-            <div className="item-stats">
-              <span>♡ {item.likes}</span>
-              <span>💬 {item.comments}</span>
-            </div>
-          </article>
-        ))}
-      </div>
+      {isLoading && (
+        <div className="listing-grid">
+          <div className="listing-loading">
+            <div className="loading-spinner" />
+            <span className="loading-text">Loading listings...</span>
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <div className="listing-grid">
+          <div className="listing-error">
+            <p>⚠ {error}</p>
+          </div>
+        </div>
+      )}
+
+      {!isLoading && !error && listings.length === 0 && (
+        <div className="listing-grid">
+          <div className="listing-empty">
+            <p>No listings available yet</p>
+          </div>
+        </div>
+      )}
+
+      {!isLoading && !error && listings.length > 0 && (
+        <div className="listing-grid">
+          {listings.map((item) => {
+            const primaryImage = getPrimaryImage(item.images);
+            const imageUrl = primaryImage
+              ? getImageUrl(primaryImage.image_url)
+              : null;
+            const isFavorite = favorites.has(item.id);
+
+            return (
+              <article key={item.id} className="listing-item">
+                <div className="item-visual">
+                  {imageUrl ? (
+                    <img
+                      src={imageUrl}
+                      alt={item.title}
+                      loading="lazy"
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                      }}
+                    />
+                  ) : null}
+                  <button
+                    type="button"
+                    className="favorite-button"
+                    onClick={() => toggleFavorite(item.id)}
+                    aria-label={
+                      isFavorite ? "Remove from favorites" : "Add to favorites"
+                    }
+                  >
+                    {isFavorite ? "♥" : "♡"}
+                  </button>
+                </div>
+
+                <div className="item-meta">
+                  <h4>{item.title || "Untitled"}</h4>
+
+                  {item.brand && <div className="item-brand">{item.brand}</div>}
+
+                  {item.size && (
+                    <div className="item-submeta">Size: {item.size}</div>
+                  )}
+
+                  {item.category && (
+                    <div className="item-category">{item.category.name}</div>
+                  )}
+
+                  {item.condition && (
+                    <div className="item-status">
+                      {formatCondition(item.condition)}
+                    </div>
+                  )}
+
+                  {item.city && (
+                    <div className="item-location">📍 {item.city}</div>
+                  )}
+
+                  {item.owner && (
+                    <div className="item-owner">by {item.owner.name}</div>
+                  )}
+
+                  {item.estimated_swap_value && (
+                    <div className="item-value">
+                      ₹ {parseFloat(item.estimated_swap_value).toFixed(2)}
+                    </div>
+                  )}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

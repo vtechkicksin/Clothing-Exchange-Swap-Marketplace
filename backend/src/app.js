@@ -18,7 +18,17 @@ app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+
+// Serve uploads directory as static files with proper CORS headers
+app.use(
+  "/uploads",
+  (req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Cross-Origin-Resource-Policy", "cross-origin");
+    next();
+  },
+  express.static(path.join(__dirname, "../uploads")),
+);
 
 app.use("/api", apiRoutes);
 

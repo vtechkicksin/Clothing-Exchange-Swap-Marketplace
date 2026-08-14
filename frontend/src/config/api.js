@@ -1,4 +1,16 @@
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
+// API base URL for endpoints
+// In development: http://localhost:8080/api
+// In production: can be configured via VITE_API_BASE_URL
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
+
+// Backend base URL for static assets
+// In development: http://localhost:8080
+// In production: can be configured via VITE_BACKEND_URL
+export const BACKEND_BASE_URL =
+  import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
+
+export { API_BASE_URL };
 
 export const apiRequest = async (endpoint, options = {}) => {
   const {
