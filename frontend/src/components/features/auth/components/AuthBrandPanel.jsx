@@ -10,14 +10,14 @@ const AuthBrandPanel = () => {
         <h1>
           Welcome back,
           <br />
-          Neha!
+          Beggers style!
         </h1>
         <p>Let&apos;s make fashion sustainable together.</p>
       </div>
 
       <div className="feature-list">
-        <span>Browse items</span>
-        <span>List your item</span>
+        <span>Environment</span>
+        <span>Friendly</span>
         <span>Save favorites</span>
       </div>
     </div>

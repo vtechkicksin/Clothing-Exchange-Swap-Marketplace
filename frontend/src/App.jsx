@@ -28,26 +28,38 @@ function AppRoutes() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
     const restoreSession = async () => {
-      const userData = await fetchCurrentSession();
-      if (userData) {
-        setUser(userData);
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-      }
-    };
+    const userData = await fetchCurrentSession();
+
+    if (userData) {
+      setUser(userData);
+      setIsAuthenticated(true);
+    } else {
+      setUser(null);
+      setIsAuthenticated(false);
+    }
+  };
+  useEffect(() => {
+    // const restoreSession = async () => {
+    //   const userData = await fetchCurrentSession();
+    //   if (userData) {
+    //     setUser(userData);
+    //     setIsAuthenticated(true);
+    //   } else {
+    //     setIsAuthenticated(false);
+    //   }
+    // };
 
     restoreSession();
   }, []);
 
   const handleLoginSuccess = async () => {
-    const userData = await fetchCurrentSession();
-    if (userData) {
-      setUser(userData);
-      setIsAuthenticated(true);
-    }
+    // const userData = await fetchCurrentSession();
+    // if (userData) {
+    //   setUser(userData);
+    //   setIsAuthenticated(true);
+    // }
+    restoreSession();
   };
 
   const handleLogout = async () => {
