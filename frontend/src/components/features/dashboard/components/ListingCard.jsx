@@ -6,10 +6,12 @@ import {
   formatCondition,
 } from "../services/clothingListingsService";
 import "./ListingCard.css";
+import ItemDetail from "./ItemDetail";
 
 const ListingCard = () => {
   const { listings, isLoading, error } = useClothingListings();
   const [favorites, setFavorites] = useState(new Set());
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const toggleFavorite = (itemId) => {
     setFavorites((prev) => {
@@ -27,7 +29,14 @@ const ListingCard = () => {
     // TODO: Navigate to full listings page or open modal
     console.log("View all listings");
   };
-
+  if (selectedItem) {
+      return (
+        <ItemDetail
+          item={selectedItem}
+          onBack={() => setSelectedItem(null)}
+        />
+      );
+    }
   return (
     <div className="listing-section panel-box">
       <div className="panel-header">
@@ -72,7 +81,7 @@ const ListingCard = () => {
             const isFavorite = favorites.has(item.id);
 
             return (
-              <article key={item.id} className="listing-item">
+              <article key={item.id} className="listing-item" onClick={() => setSelectedItem(item)}>
                 <div className="item-visual">
                   {imageUrl ? (
                     <img
@@ -87,7 +96,10 @@ const ListingCard = () => {
                   <button
                     type="button"
                     className="favorite-button"
-                    onClick={() => toggleFavorite(item.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(item.id);
+                    }}
                     aria-label={
                       isFavorite ? "Remove from favorites" : "Add to favorites"
                     }
