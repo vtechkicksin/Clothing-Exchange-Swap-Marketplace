@@ -4,7 +4,7 @@ import {
   getPrimaryImage,
   getImageUrl,
   formatCondition,
-} from "../services/clothingListingsService";
+} from "../services/listingsService";
 import "./ListingCard.css";
 import ItemDetail from "./ItemDetail";
 

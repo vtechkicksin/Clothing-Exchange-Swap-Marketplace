@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../../context/AuthContext";
 
 const navItems = [
   "Dashboard",
@@ -18,15 +19,14 @@ const getInitials = (name) => {
     .slice(0, 2);
 };
 
-const DashboardHeader = ({ onLogout, user }) => {
+const DashboardHeader = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const userName = user?.fullName || user?.name || "User";
   const initials = getInitials(userName);
 
-  const handleLogout = () => {
-    if (onLogout) {
-      onLogout();
-    }
+  const handleLogout = async () => {
+    await logout();
     navigate("/");
   };
 

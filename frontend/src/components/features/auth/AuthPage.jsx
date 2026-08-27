@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuth } from "../../../context/AuthContext";
 import AuthBrandPanel from "./components/AuthBrandPanel";
 import AuthForm from "./components/AuthForm";
 import { loginUser, registerUser } from "./services/authService";
@@ -16,7 +17,8 @@ const initialRegisterState = {
   phone: "",
 };
 
-const AuthPage = ({ onLoginSuccess }) => {
+const AuthPage = () => {
+  const { restoreSession } = useAuth();
   const [mode, setMode] = useState("login");
   const [loginData, setLoginData] = useState(initialLoginState);
   const [registerData, setRegisterData] = useState(initialRegisterState);
@@ -39,15 +41,12 @@ const AuthPage = ({ onLoginSuccess }) => {
     setMessage({ type: "", text: "" });
 
     try {
-      const result = await loginUser(loginData);
+      await loginUser(loginData);
       setMessage({
         type: "success",
         text: "Login successful! Redirecting to your dashboard...",
       });
-
-      if (onLoginSuccess) {
-        onLoginSuccess(result);
-      }
+      await restoreSession();
     } catch (error) {
       setMessage({
         type: "error",
@@ -64,14 +63,13 @@ const AuthPage = ({ onLoginSuccess }) => {
     setMessage({ type: "", text: "" });
 
     try {
-      const result = await registerUser(registerData);
+      await registerUser(registerData);
       setMessage({
         type: "success",
         text: "Registration successful! Please log in to continue.",
       });
       setMode("login");
       setRegisterData(initialRegisterState);
-      console.log("Registration response:", result);
     } catch (error) {
       setMessage({
         type: "error",

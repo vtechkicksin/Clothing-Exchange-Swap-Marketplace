@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createListing } from "../services/listingService";
+import { useAuth } from "../../../../context/AuthContext";
+import { createListing } from "../services/listingsService";
 import "./ListYourItemPage.css";
 
 const maxPhotos = 6;
@@ -41,13 +42,16 @@ const getInitials = (name) => {
     .slice(0, 2);
 };
 
-const ListYourItemPage = ({ onLogout, user }) => {
+const ListYourItemPage = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const userName = user?.fullName || user?.name || "User";
   const initials = getInitials(userName);
   const [formData, setFormData] = useState(initialFormState);
   const [selectedImages, setSelectedImages] = useState([]);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [submitError, setSubmitError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const previewImages = useMemo(
     () =>
@@ -77,10 +81,8 @@ const ListYourItemPage = ({ onLogout, user }) => {
     return selectedImages.slice(startIndex, startIndex + 3);
   }, [activeImageIndex, selectedImages]);
 
-  const handleLogout = () => {
-    if (onLogout) {
-      onLogout();
-    }
+  const handleLogout = async () => {
+    await logout();
     navigate("/");
   };
 
@@ -117,6 +119,8 @@ const ListYourItemPage = ({ onLogout, user }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setSubmitError("");
+    setIsSubmitting(true);
 
     const formDataToSend = new FormData();
 
@@ -129,14 +133,14 @@ const ListYourItemPage = ({ onLogout, user }) => {
     });
 
     try {
-      const result = await createListing(formDataToSend);
-      console.log("Listing created successfully:", result);
+      await createListing(formDataToSend);
       navigate("/dashboard");
     } catch (error) {
-      console.error("Create listing error:", error);
-      alert(
+      setSubmitError(
         error.message || "Something went wrong while creating the listing.",
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -206,6 +210,12 @@ const ListYourItemPage = ({ onLogout, user }) => {
           <h1>List Your Item</h1>
           <p>Share your pre-loved item and find the perfect swap!</p>
         </div>
+
+        {submitError && (
+          <div className="form-message error" role="alert">
+            {submitError}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="listing-content-grid">
           <section className="form-panel-card">
@@ -466,8 +476,12 @@ const ListYourItemPage = ({ onLogout, user }) => {
               </label>
             </section>
 
-            <button type="submit" className="publish-button">
-              Publish Listing
+            <button
+              type="submit"
+              className="publish-button"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Publishing..." : "Publish Listing"}
             </button>
           </aside>
         </form>

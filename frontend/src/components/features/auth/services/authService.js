@@ -1,16 +1,24 @@
-import { apiRequest } from "../../../../config/api";
+import { apiGet, apiPost } from "../../../../config/api";
+import { ENDPOINTS } from "../../../../config/endpoints";
 
-const request = async (endpoint, payload) => {
-  return apiRequest(endpoint, {
-    method: "POST",
-    body: JSON.stringify(payload),
+export const loginUser = (payload) =>
+  apiPost(ENDPOINTS.auth.login, payload, { skipUnauthorizedRedirect: true });
+
+export const registerUser = (payload) =>
+  apiPost(ENDPOINTS.auth.register, payload, {
+    skipUnauthorizedRedirect: true,
   });
+
+export const getCurrentUser = async () => {
+  try {
+    const data = await apiGet(ENDPOINTS.auth.me, {
+      skipUnauthorizedRedirect: true,
+    });
+    return data.user || null;
+  } catch {
+    return null;
+  }
 };
 
-export const loginUser = async (payload) => {
-  return request("/auth/login", payload);
-};
-
-export const registerUser = async (payload) => {
-  return request("/auth/register", payload);
-};
+export const logoutUser = () =>
+  apiPost(ENDPOINTS.auth.logout, undefined, { skipUnauthorizedRedirect: true });

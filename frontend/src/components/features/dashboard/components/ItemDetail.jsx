@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   getImageUrl,
   formatCondition,
-} from "../services/clothingListingsService";
+} from "../services/listingsService";
 import "./ItemDetail.css";
 
 const ItemDetail = ({ item, onBack }) => {
