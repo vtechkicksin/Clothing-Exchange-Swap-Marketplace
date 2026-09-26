@@ -12,11 +12,23 @@ const Conversation = sequelize.define(
 
     swap_request_id: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: "swap_requests",
         key: "id",
       },
+    },
+
+    user_one_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: { model: "users", key: "id" },
+    },
+
+    user_two_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: { model: "users", key: "id" },
     },
 
     created_at: {
@@ -34,7 +46,7 @@ const Conversation = sequelize.define(
   {
     tableName: "conversations",
     timestamps: false,
-  }
+  },
 );
 
 module.exports = Conversation;

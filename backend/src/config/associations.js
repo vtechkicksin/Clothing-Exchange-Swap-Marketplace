@@ -5,6 +5,8 @@ const User = require("../models/User");
 const Category = require("../models/Category");
 const ClothingItem = require("../models/ClothingItem");
 const ClothingImage = require("../models/ClothingImage");
+const Conversation = require("../models/Conversation");
+const Message = require("../models/Message");
 
 // ClothingItem belongs to User (owner)
 ClothingItem.belongsTo(User, {
@@ -41,3 +43,15 @@ Category.hasMany(ClothingItem, {
   foreignKey: "category_id",
   as: "items",
 });
+
+Conversation.belongsTo(User, { foreignKey: "user_one_id", as: "userOne" });
+Conversation.belongsTo(User, { foreignKey: "user_two_id", as: "userTwo" });
+Conversation.hasMany(Message, {
+  foreignKey: "conversation_id",
+  as: "messages",
+});
+Message.belongsTo(Conversation, {
+  foreignKey: "conversation_id",
+  as: "conversation",
+});
+Message.belongsTo(User, { foreignKey: "sender_id", as: "sender" });

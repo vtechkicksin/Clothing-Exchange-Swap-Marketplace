@@ -1,11 +1,12 @@
 import { useState } from "react";
-import {
-  getImageUrl,
-  formatCondition,
-} from "../services/listingsService";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../../context/AuthContext";
+import { getImageUrl, formatCondition } from "../services/listingsService";
 import "./ItemDetail.css";
 
 const ItemDetail = ({ item, onBack }) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [selectedImage, setSelectedImage] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
 
@@ -16,14 +17,10 @@ const ItemDetail = ({ item, onBack }) => {
   const currentImage = images[selectedImage];
 
   const handlePreviousImage = () => {
-    setSelectedImage((prev) =>
-      prev === 0 ? images.length - 1 : prev - 1
-    );
+    setSelectedImage((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
   const handleNextImage = () => {
-    setSelectedImage((prev) =>
-      prev === images.length - 1 ? 0 : prev + 1
-    );
+    setSelectedImage((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
   if (!item) {
@@ -33,11 +30,7 @@ const ItemDetail = ({ item, onBack }) => {
   return (
     <div className="item-detail panel-box">
       {/* Back */}
-      <button
-        type="button"
-        className="item-detail-back"
-        onClick={onBack}
-      >
+      <button type="button" className="item-detail-back" onClick={onBack}>
         ← Back to Browse
       </button>
 
@@ -55,9 +48,7 @@ const ItemDetail = ({ item, onBack }) => {
                 }}
               />
             ) : (
-              <div className="item-no-image">
-                No image available
-              </div>
+              <div className="item-no-image">No image available</div>
             )}
 
             {images.length > 1 && (
@@ -115,9 +106,7 @@ const ItemDetail = ({ item, onBack }) => {
               className="item-favorite-button"
               onClick={() => setIsFavorite((prev) => !prev)}
               aria-label={
-                isFavorite
-                  ? "Remove from favorites"
-                  : "Add to favorites"
+                isFavorite ? "Remove from favorites" : "Add to favorites"
               }
             >
               {isFavorite ? "♥" : "♡"}
@@ -126,11 +115,7 @@ const ItemDetail = ({ item, onBack }) => {
 
           {/* Badges */}
           <div className="item-badges">
-            {item.size && (
-              <span className="item-badge">
-                Size: {item.size}
-              </span>
-            )}
+            {item.size && <span className="item-badge">Size: {item.size}</span>}
 
             {item.condition && (
               <span className="item-badge">
@@ -139,9 +124,7 @@ const ItemDetail = ({ item, onBack }) => {
             )}
 
             {item.brand && (
-              <span className="item-badge item-brand-badge">
-                {item.brand}
-              </span>
+              <span className="item-badge item-brand-badge">{item.brand}</span>
             )}
           </div>
 
@@ -165,14 +148,10 @@ const ItemDetail = ({ item, onBack }) => {
             <div className="location-value">
               <span>⌖</span>
 
-              <span>
-                {item.city || "Location unavailable"}
-              </span>
+              <span>{item.city || "Location unavailable"}</span>
 
               {item.distance && (
-                <span className="distance">
-                  • {item.distance} km away
-                </span>
+                <span className="distance">• {item.distance} km away</span>
               )}
             </div>
           </div>
@@ -187,17 +166,13 @@ const ItemDetail = ({ item, onBack }) => {
               </div>
 
               <div className="owner-details">
-                <div className="owner-name">
-                  {ownerName}
-                </div>
+                <div className="owner-name">{ownerName}</div>
 
                 <div className="owner-rating">
                   <span>★</span> 4.8 (2 reviews)
                 </div>
 
-                <div className="owner-member">
-                  Member since Jan 2023
-                </div>
+                <div className="owner-member">Member since Jan 2023</div>
               </div>
             </div>
           </div>
@@ -207,23 +182,23 @@ const ItemDetail = ({ item, onBack }) => {
             <h3>Description</h3>
 
             <p>
-              {item.description ||
-                "No description provided for this item."}
+              {item.description || "No description provided for this item."}
             </p>
           </div>
 
           {/* Actions */}
           <div className="item-actions">
-            <button
-              type="button"
-              className="send-swap-button"
-            >
+            <button type="button" className="send-swap-button">
               Send Swap Request
             </button>
 
             <button
               type="button"
               className="chat-with-owner-button"
+              disabled={!item.owner?.id || item.owner.id === user?.id}
+              onClick={() =>
+                navigate(`/messages?user=${encodeURIComponent(item.owner.id)}`)
+              }
             >
               Chat with {ownerName}
             </button>
@@ -239,9 +214,7 @@ const ItemDetail = ({ item, onBack }) => {
         <div className="item-details-grid">
           <div className="detail-item">
             <span>Category</span>
-            <strong>
-              {item.category?.name || "-"}
-            </strong>
+            <strong>{item.category?.name || "-"}</strong>
           </div>
 
           <div className="detail-item">
@@ -252,9 +225,7 @@ const ItemDetail = ({ item, onBack }) => {
           <div className="detail-item">
             <span>Condition</span>
             <strong>
-              {item.condition
-                ? formatCondition(item.condition)
-                : "-"}
+              {item.condition ? formatCondition(item.condition) : "-"}
             </strong>
           </div>
 
