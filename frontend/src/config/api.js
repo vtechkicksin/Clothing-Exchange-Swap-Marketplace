@@ -1,9 +1,9 @@
 // Relative /api uses the Vite dev proxy; override via VITE_API_BASE_URL in production.
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL_PROD || "/api";
 
 // Backend base URL for static assets (e.g. uploaded images)
 export const BACKEND_BASE_URL =
-  import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
+  import.meta.env.VITE_BACKEND_URL_PROD || "http://localhost:8080";
 
 export { API_BASE_URL };
 
